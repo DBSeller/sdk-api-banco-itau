@@ -23,10 +23,10 @@ composer require dbseller/sdk_banco_itau
 
 ## Requisitos
 
-- php:               ">5.6" "<7.4"
-- ext-curl:          "*",
-- ext-json:          "*",
-- ext-mbstring:      "*",
-- guzzlehttp/guzzle: "~6.5.5"
+- php ">=5.6", "<=7.4"
+- ext-curl
+- ext-json
+- ext-mbstring
+- guzzlehttp/guzzle ~6.5.5
 ## License
 Proprietary DBSeller
