@@ -56,8 +56,6 @@ class OauthApi
      */
     public function gerarAccessToken()
     {
-        echo "* OauthApi->gerarAccessToken():" . PHP_EOL;
-
         $httpBody     = '';
         $response     = null;
         $token        = "";
@@ -72,8 +70,6 @@ class OauthApi
         $headerParams['x-itau-apikey'] = $clientId;
 
         if ($this->config->isModoProducao()) {
-            echo "* Modo Producao. Aplicando cert e ssl_key no header da requisicao" . PHP_EOL;
-
             if ($this->config->getPathCertificado() !== null && $this->config->getPathPrivateKey() !== null) {
                 $options['cert']    = $this->config->getPathCertificado();
                 $options['ssl_key'] = $this->config->getPathPrivateKey();

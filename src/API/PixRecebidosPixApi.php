@@ -1531,8 +1531,6 @@ class PixRecebidosPixApi
         }
 
         if ($this->config->isModoProducao()) {
-            echo "* Aplicando cert e ssl_key na requisicao" . PHP_EOL;
-
             if ($this->config->getPathCertificado() !== null && $this->config->getPathPrivateKey() !== null) {
                 $options['cert'] = $this->config->getPathCertificado();
                 $options['ssl_key'] = $this->config->getPathPrivateKey();

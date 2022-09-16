@@ -20,30 +20,20 @@ class HeaderSelector
      * @return array
      */
     public function aplicarHeadersITAU($config, $headersInput)
-    {
-        echo "* HeaderSelector->aplicarHeadersITAU()" . PHP_EOL;
-        
+    {     
         if ($config->isModoProducao()) {
-            echo "* Modo Producao\n";
-            echo "* Incluindo header Authorization Bearer";
-
             if ($config->getAccessToken() !== null ||
                 $config->getAccessToken() !== ''
             ) {
                 $headersInput['Authorization'] = 'Bearer ' . $config->getAccessToken();
             }
         } else {
-            echo "* Modo SANDBOX\n";
-            echo "* Aplicando header x-sandbox-token\n";
-
             if ($config->getAccessToken() !== null ||
                 $config->getAccessToken() !== ''
             ) {
                 $headersInput['x-sandbox-token'] = $config->getAccessToken();
             }
         }
-       
-        echo "* aplicando header x-itau-apikey com o valor do client_id" . PHP_EOL;
 
         $headersInput['x-itau-apikey'] = (
             isset($config->apiKeys['client_id']) ?
