@@ -1466,7 +1466,7 @@ class CobrancaImediataCobApi
      */
     public function postcob($body = null, $x_correlation_id = null)
     {
-        $this->postcobWithHttpInfo($body, $x_correlation_id);
+        return $this->postcobWithHttpInfo($body, $x_correlation_id);
     }
 
     /**
@@ -1483,7 +1483,7 @@ class CobrancaImediataCobApi
      */
     public function postcobWithHttpInfo($body = null, $x_correlation_id = null)
     {
-        $returnType = '';
+        $returnType = '\DBSeller\SdkBancoItau\Model\CobrancaPutResponse';
         $request    = $this->postcobRequest($body, $x_correlation_id);
 
         try {
@@ -1515,7 +1515,21 @@ class CobrancaImediataCobApi
                 );
             }
 
-            return [null, $statusCode, $response->getHeaders()];
+            $responseBody = $response->getBody();
+            if ($returnType === '\SplFileObject') {
+                $content = $responseBody; //stream goes to serializer
+            } else {
+                $content = $responseBody->getContents();
+                if (!in_array($returnType, ['string','integer','bool'])) {
+                    $content = json_decode($content);
+                }
+            }
+            
+            return [
+                ObjectSerializer::deserialize($content, $returnType, []),
+                $response->getStatusCode(),
+                $response->getHeaders()
+            ];
         } catch (ApiException $e) {
             switch ($e->getCode()) {
                 case 201:

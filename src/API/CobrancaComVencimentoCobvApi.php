@@ -1438,7 +1438,7 @@ class CobrancaComVencimentoCobvApi
      */
     public function putcobvtxid($txid, $body = null)
     {
-        $this->putcobvtxidWithHttpInfo($txid, $body);
+        return $this->putcobvtxidWithHttpInfo($txid, $body);
     }
 
     /**
@@ -1454,7 +1454,7 @@ class CobrancaComVencimentoCobvApi
      */
     public function putcobvtxidWithHttpInfo($txid, $body = null)
     {
-        $returnType = '';
+        $returnType = '\DBSeller\SdkBancoItau\Model\CobrancaVencimentoPutResponse';
         $request    = $this->putcobvtxidRequest($txid, $body);
 
         try {
@@ -1485,8 +1485,23 @@ class CobrancaComVencimentoCobvApi
                     $response->getBody()
                 );
             }
+            
+            $responseBody = $response->getBody();
+            if ($returnType === '\SplFileObject') {
+                $content = $responseBody; //stream goes to serializer
+            } else {
+                $content = $responseBody->getContents();
+                if (!in_array($returnType, ['string','integer','bool'])) {
+                    $content = json_decode($content);
+                }
+            }
+            
+            return [
+                ObjectSerializer::deserialize($content, $returnType, []),
+                $response->getStatusCode(),
+                $response->getHeaders()
+            ];
 
-            return [null, $statusCode, $response->getHeaders()];
         } catch (ApiException $e) {
             switch ($e->getCode()) {
                 case 201:
@@ -1696,7 +1711,7 @@ class CobrancaComVencimentoCobvApi
         );
 
         $query = Query::build($queryParams);
-
+        // dd($httpBody, $headers,$query);
         return new Request(
             'PUT',
             $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
