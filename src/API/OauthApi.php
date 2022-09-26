@@ -7,7 +7,7 @@ use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\RequestOptions;
 use GuzzleHttp\Exception\RequestException;
-
+use GuzzleHttp\Psr7\MultipartStream;
 use DBSeller\SdkBancoItau\Exceptions\ApiException;
 use DBSeller\SdkBancoItau\Configuration;
 use DBSeller\SdkBancoItau\HeaderSelector;
@@ -56,23 +56,27 @@ class OauthApi
      */
     public function gerarAccessToken()
     {
-        $httpBody     = '';
         $response     = null;
         $token        = "";
         $options      = $this->createHttpClientOption();
         $clientId     = $this->config->getApiKey('client_id');
         $clientSecret = $this->config->getApiKey('client_secret');
 
-        $httpBody = '{ "client_id":"' . $clientId . '", "client_secret":"' . $clientSecret . '" }';
-
-        $headerParams = [];
-        $headerParams['Content-Type']  = "application/json";
-        $headerParams['x-itau-apikey'] = $clientId;
+        $options = [
+            'form_params' =>
+                [
+                    'client_id' => $clientId,
+                    'client_secret' => $clientSecret,
+                    'grant_type' => 'client_credentials'
+                ]
+        ];
 
         if ($this->config->isModoProducao()) {
             if ($this->config->getPathCertificado() !== null && $this->config->getPathPrivateKey() !== null) {
-                $options['cert']    = $this->config->getPathCertificado();
-                $options['ssl_key'] = $this->config->getPathPrivateKey();
+                $options[] = [
+                    'cert' => $this->config->getPathCertificado(),
+                    'ssl_key' => $this->config->getPathPrivateKey()
+                ];
             } else {
                 throw new ApiException(
                     "* Modo Producao: Path p/ Certificado e path p/ Private Key obrigatorio.",
@@ -82,11 +86,14 @@ class OauthApi
                 );
             }
         }
-
-        $request = new Request('POST', $this->config->getUrlOAuth(), $headerParams, $httpBody);
-
+        
         try {
-            $response = $this->client->send($request, $options);
+            
+            $response = $this->client->request(
+                'POST',
+                $this->config->getUrlOAuth(),
+                $options
+            );
 
             if ($response->getBody()) {
                 $bodyJson = json_decode($response->getBody());
