@@ -73,10 +73,8 @@ class OauthApi
 
         if ($this->config->isModoProducao()) {
             if ($this->config->getPathCertificado() !== null && $this->config->getPathPrivateKey() !== null) {
-                $options[] = [
-                    'cert' => $this->config->getPathCertificado(),
-                    'ssl_key' => $this->config->getPathPrivateKey()
-                ];
+                $options['cert'] = $this->config->getPathCertificado();
+                $options['ssl_key'] = $this->config->getPathPrivateKey();
             } else {
                 throw new ApiException(
                     "* Modo Producao: Path p/ Certificado e path p/ Private Key obrigatorio.",
@@ -88,7 +86,6 @@ class OauthApi
         }
         
         try {
-            
             $response = $this->client->request(
                 'POST',
                 $this->config->getUrlOAuth(),
